@@ -15,3 +15,4 @@ describe 'board' do
     game.secret.values.each { |color| expect(color_list).to include(color) }
   end
 end
+
