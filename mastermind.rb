@@ -1,6 +1,9 @@
 require './player'
+require './rules'
 
 class Board
+  include Game_rules
+
   attr_reader :secret, :human, :counter
 
   def initialize
