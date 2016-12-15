@@ -7,11 +7,9 @@ class Board
   attr_reader :secret, :human, :counter
 
   def initialize
-    @secret = {:first=>"", :second=>"", :third=>"", :fourth=>""}
+    @secret = [" ", " ", " ", " "]
     @color_list = ["blue", "green", "red", "yellow", "orange", "purple"]
     @guess = [" ", " ", " ", " "]
-    @check = [[" ", " "], [" ", " "]]
-    @compare = []
     @counter = 12
     fillSecret
     createPlayer
@@ -19,20 +17,25 @@ class Board
   end
 
   def fillSecret
-    @secret.keys.each { |key| @secret[key] = @color_list[rand(6)] }
+    (0...4).each { |index| @secret[index] = @color_list[rand(6)] }
   end
 
   def repr
+    c = compareGuess(@guess, @secret)
     puts "\n"
-    puts "#{@guess[0]} #{@guess[1]} #{@guess[2]} #{@guess[3]}".center(100)
+    puts "your guesses are: "
+    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
+    good = c.count("o")
+    mispl = c.count("x")
     puts "\n"
-    @check.each { |i| puts "|#{i[0]} #{i[1]}|".center(100) }
+    puts "\t\t Your results are #{good} placed and #{mispl} misplaced"
+    puts "\n"
+    puts "\n"
   end
 
   def createPlayer
     puts "\n"
     puts "What is your name please?"
-    puts "\n"
     name = gets.chomp
     @human = Player.new(name)
   end
@@ -47,9 +50,7 @@ class Board
         @guess[i] = presentChoices
       end
       
-      puts "\n"
-      puts "your guesses are: "
-      puts "#{@guess[0]} | #{@guess[1]} | #{@guess[2]} | #{@guess[3]}"
+      repr
 
       @counter -= 1
     end
@@ -57,7 +58,6 @@ class Board
 
   def presentChoices
     validate = false
-    puts "\n"
     puts "1- blue, 2- green, 3- red, 4- yellow, 5- orange, 6- purple"
     puts "\n" 
     while validate == false

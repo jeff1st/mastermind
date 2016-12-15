@@ -1,15 +1,28 @@
 module Game_rules
   def compareGuess(guess, secret)
-    temp_list = [" ", " ", " ", " "]
-    (0...guess.length).each do |index|
-      if secret[index] == guess[index]
-        temp_list[index] = "o"
-      elsif secret.include?(guess[index])
-        temp_list[index] = "x"
-      else
-        temp_list[index] = "."
+    counter = Hash.new(0)
+    secret.each { |item| counter[item] += 1 }
+    results = [" ", " ", " ", " "]
+
+    (0...4).each do |good_place|
+      item_to_test = guess[good_place]
+      if item_to_test == secret[good_place]
+        results[good_place] = "o"
+        counter[item_to_test] -= 1
       end
     end
-    return temp_list
+
+    (0...4).each do |place|
+      if !secret.include?(guess[place])
+        results[place] = "."
+      else
+        if results[place] != "o"
+          item_to_test = guess[place]
+          counter[item_to_test] < 1 ? (results[place] = ".") : (results[place] = "x")
+          counter[item_to_test] -= 1
+        end
+      end
+    end
+    return results
   end
 end
