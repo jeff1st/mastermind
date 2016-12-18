@@ -4,6 +4,7 @@ require './ai'
 
 class Board
   include Game_rules
+  include Ai
 
   attr_reader :secret, :counter, :human
 
@@ -34,10 +35,9 @@ class Board
   end
 
   def startComputer
-    include Ai
     createPlayer
     makeSecret
-    mainLoopforComp
+    mainLoopForComp
   end
 
   def fillSecret
@@ -48,8 +48,19 @@ class Board
     count = 4
     puts "Please #{@human.name}, create the secret!"
     puts "\n"
-    (0..4).each do |time|
+    (0...4).each do |time|
+      validate = false
+      puts "Select on color from the following choices... "
+      @color_list.each_with_index { |color, index| puts "#{index}: #{color}" }
+      while validate == false
+        choice = gets.chomp
+        puts "\n"
+        choice =~ /^[0-5]{1}$/ ? (validate = true) : (puts "Please, give a number between 0 and 5")
+      end
+
+      @secret[time] = @color_list[choice.to_i]
     end
+    puts @secret
   end
 
   def repr
@@ -89,6 +100,20 @@ class Board
       @counter -= 1
     end
     talkToPlayer("loose")
+  end
+
+  def mainLoopForComp
+    while @counter != 0
+      guess_list = []
+      puts "\n"
+      puts "Computer is making a choice"
+      puts "Guess #{13 - @counter} on 12"
+      (0...4).each do |i|
+        guess_list << makeRandomChoice
+      end
+      puts guess_list
+      @counter -= 1
+    end
   end
 
   def presentChoices
