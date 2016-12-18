@@ -1,23 +1,55 @@
 require './player'
 require './rules'
+require './ai'
 
 class Board
   include Game_rules
 
-  attr_reader :secret, :human, :counter
+  attr_reader :secret, :counter, :human
 
   def initialize
     @secret = [" ", " ", " ", " "]
     @color_list = ["blue", "green", "red", "yellow", "orange", "purple"]
     @guess = [" ", " ", " ", " "]
     @counter = 12
+    start
+  end
+
+  def start
+    validate = false
+    puts "\n"
+    puts "play as coder/decoder? (c/d)"
+    while validate == false
+      answer = gets.chomp
+      answer == "c" || answer == "d" ? (validate = true) : (puts "please choose c or d")
+    end
+
+    answer == "c" ? (startComputer) : (startHuman)
+  end
+
+  def startHuman
     fillSecret
     createPlayer
     mainLoop
   end
 
+  def startComputer
+    include Ai
+    createPlayer
+    makeSecret
+    mainLoopforComp
+  end
+
   def fillSecret
     (0...4).each { |index| @secret[index] = @color_list[rand(6)] }
+  end
+
+  def makeSecret
+    count = 4
+    puts "Please #{@human.name}, create the secret!"
+    puts "\n"
+    (0..4).each do |time|
+    end
   end
 
   def repr
@@ -31,6 +63,8 @@ class Board
     puts "\t\t Your results are #{good} placed and #{mispl} misplaced"
     puts "\n"
     puts "\n"
+
+    talkToPlayer("win") if good == 4
   end
 
   def createPlayer
@@ -43,7 +77,7 @@ class Board
   def mainLoop
     while @counter != 0
       puts "\n"
-      puts "Please make your guess (#{13 - @counter} on 12)"
+      puts "Please #{@human.name}, make your guess (#{13 - @counter} on 12)"
       (0...4).each do |i|
         puts "\n"
         puts "#{i+1} place?"
@@ -54,6 +88,7 @@ class Board
 
       @counter -= 1
     end
+    talkToPlayer("loose")
   end
 
   def presentChoices
@@ -79,6 +114,32 @@ class Board
     else
       return "purple"
     end
+  end
+
+  def talkToPlayer(status)
+    status == "win" ? (puts "You win"; endGame) : (puts "You loose"; endGame)
+  end
+
+  def endGame
+    validate = false
+    puts "\n"
+    puts "Game is over now!"
+    puts "Do you want to play another round? (y/n)"
+    puts "\n"
+
+    while validate == false
+      answer = gets.chomp
+      answer == "y" || answer == "n" ? (validate = true) : (puts "Not a correct choice!, please try again (y or n)")
+    end
+
+    answer == "y" ? (puts "OK #{@human.name}, let's play again"; reset) : (puts "OK, bye #{@human.name}, then"; exit(0))
+  end
+
+  def reset
+    @counter = 12
+    @secret = [" ", " ", " ", " "]
+    fillSecret
+    mainLoop
   end
 end
 
