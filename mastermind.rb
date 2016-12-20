@@ -13,6 +13,7 @@ class Board
     @color_list = ["blue", "green", "red", "yellow", "orange", "purple"]
     @guess = [" ", " ", " ", " "]
     @counter = 12
+    createPlayer
     start
   end
 
@@ -30,12 +31,10 @@ class Board
 
   def startHuman
     fillSecret
-    createPlayer
     mainLoop
   end
 
   def startComputer
-    createPlayer
     makeSecret
     mainLoopForComp
   end
@@ -78,13 +77,6 @@ class Board
     talkToPlayer("win") if good == 4
   end
 
-  def createPlayer
-    puts "\n"
-    puts "What is your name please?"
-    name = gets.chomp
-    @human = Player.new(name)
-  end
-
   def mainLoop
     while @counter != 0
       puts "\n"
@@ -104,16 +96,30 @@ class Board
 
   def mainLoopForComp
     while @counter != 0
-      guess_list = []
+      @guess = []
       puts "\n"
       puts "Computer is making a choice"
       puts "Guess #{13 - @counter} on 12"
       (0...4).each do |i|
-        guess_list << makeRandomChoice
+        @guess << @color_list[makeRandomChoice]
       end
-      puts guess_list
+      puts "Computer has made his choices! "
+      puts "\n"
+      puts "#{@guess[0]}, #{@guess[1]}, #{@guess[2]}, #{@guess[3]}"
+      puts "\n"
+      validate = false
+
+      repr
+
+      while validate == false
+        puts "Press 'c' to continue"
+        input = gets.chomp
+        validate = true if input == "c"
+      end
+
       @counter -= 1
     end
+    talkToPlayer("loose")
   end
 
   def presentChoices
@@ -163,8 +169,15 @@ class Board
   def reset
     @counter = 12
     @secret = [" ", " ", " ", " "]
-    fillSecret
-    mainLoop
+    @guess = [" ", " ", " ", " "]
+    start
+  end
+
+  def createPlayer
+    puts "\n"
+    puts "What is your name please?"
+    name = gets.chomp
+    @human = Player.new(name)
   end
 end
 

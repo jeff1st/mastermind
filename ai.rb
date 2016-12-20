@@ -3,7 +3,8 @@ module Ai
     choice = rand(6)
   end
 
-  def makeChoiceWithConstraint
+  def makeMoreCleverChoice(results_list)
+
 
   end
 end
