@@ -77,6 +77,22 @@ class Board
     talkToPlayer("win") if good == 4
   end
 
+  def reprForComp
+    c = compareGuess(@guess, @secret)
+    puts "\n"
+    puts "Computer guesses are: "
+    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
+    good = c.count("o")
+    mispl = c.count("x")
+    puts "\n"
+    puts "\t\t Computer results are #{good} placed and #{mispl} misplaced"
+    puts "\n"
+    puts "\n"
+    
+    talkToComputer("win") if good == 4
+    return c
+  end
+  
   def mainLoop
     while @counter != 0
       puts "\n"
@@ -95,21 +111,34 @@ class Board
   end
 
   def mainLoopForComp
+    @guess = []
+    puts "\n"
+    puts "Computer is making a choice"
+    puts "Guess #{13 - @counter} on 12"
+    (0...4).each do |i|
+      @guess << @color_list[makeRandomChoice]
+    end
+      
+    res = reprForComp
+    validate = false
+
+    while validate == false
+      puts "Press 'c' to continue"
+      input = gets.chomp
+      validate = true if input == "c"
+    end
+      
+    @counter -= 1
+
     while @counter != 0
-      @guess = []
       puts "\n"
       puts "Computer is making a choice"
       puts "Guess #{13 - @counter} on 12"
-      (0...4).each do |i|
-        @guess << @color_list[makeRandomChoice]
-      end
-      puts "Computer has made his choices! "
-      puts "\n"
-      puts "#{@guess[0]}, #{@guess[1]}, #{@guess[2]}, #{@guess[3]}"
-      puts "\n"
-      validate = false
+      @guess = makeMoreCleverChoice(res, @guess)
 
-      repr
+      res = reprForComp
+
+      validate = false
 
       while validate == false
         puts "Press 'c' to continue"
@@ -118,8 +147,9 @@ class Board
       end
 
       @counter -= 1
+
     end
-    talkToPlayer("loose")
+    talkToComputer("loose")
   end
 
   def presentChoices
@@ -149,6 +179,10 @@ class Board
 
   def talkToPlayer(status)
     status == "win" ? (puts "You win"; endGame) : (puts "You loose"; endGame)
+  end
+
+  def talkToComputer(status)
+    status == "win" ? (puts "Computer win"; endGame) : (puts "Computer loose"; endGame)
   end
 
   def endGame
