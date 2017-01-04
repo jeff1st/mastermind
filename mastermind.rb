@@ -13,17 +13,25 @@ class Board
     @color_list = ["blue", "green", "red", "yellow", "orange", "purple"]
     @guess = [" ", " ", " ", " "]
     @counter = 12
+    @computer_score = 0
     createPlayer
     start
   end
 
+  def createPlayer
+    puts "\n"
+    puts "What is your name please?"
+    name = gets.chomp
+    @human = Player.new(name)
+  end
+
   def start
-    validate = false
+    pass = false
     puts "\n"
     puts "play as coder/decoder? (c/d)"
-    while validate == false
+    while pass == false
       answer = gets.chomp
-      answer == "c" || answer == "d" ? (validate = true) : (puts "please choose c or d")
+      answer == "c" || answer == "d" ? (pass = true) : (puts "please choose c or d")
     end
 
     answer == "c" ? (startComputer) : (startHuman)
@@ -39,60 +47,12 @@ class Board
     mainLoopForComp
   end
 
+#Human part
+
   def fillSecret
     (0...4).each { |index| @secret[index] = @color_list[rand(6)] }
   end
 
-  def makeSecret
-    count = 4
-    puts "Please #{@human.name}, create the secret!"
-    puts "\n"
-    (0...4).each do |time|
-      validate = false
-      puts "Select on color from the following choices... "
-      @color_list.each_with_index { |color, index| puts "#{index}: #{color}" }
-      while validate == false
-        choice = gets.chomp
-        puts "\n"
-        choice =~ /^[0-5]{1}$/ ? (validate = true) : (puts "Please, give a number between 0 and 5")
-      end
-
-      @secret[time] = @color_list[choice.to_i]
-    end
-    puts @secret
-  end
-
-  def repr
-    c = compareGuess(@guess, @secret)
-    puts "\n"
-    puts "your guesses are: "
-    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
-    good = c.count("o")
-    mispl = c.count("x")
-    puts "\n"
-    puts "\t\t Your results are #{good} placed and #{mispl} misplaced"
-    puts "\n"
-    puts "\n"
-
-    talkToPlayer("win") if good == 4
-  end
-
-  def reprForComp
-    c = compareGuess(@guess, @secret)
-    puts "\n"
-    puts "Computer guesses are: "
-    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
-    good = c.count("o")
-    mispl = c.count("x")
-    puts "\n"
-    puts "\t\t Computer results are #{good} placed and #{mispl} misplaced"
-    puts "\n"
-    puts "\n"
-    
-    talkToComputer("win") if good == 4
-    return c
-  end
-  
   def mainLoop
     while @counter != 0
       puts "\n"
@@ -107,7 +67,45 @@ class Board
 
       @counter -= 1
     end
+
+    @computer_score += 1
     talkToPlayer("loose")
+  end
+
+  def repr
+    c = compareGuess(@guess, @secret)
+    puts "\n"
+    puts "your guesses are: "
+    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
+    good = c.count("o")
+    mispl = c.count("x")
+    puts "\n"
+    puts "\t\t Your results are #{good} placed and #{mispl} misplaced"
+    puts "\n"
+    puts "\n"
+
+    (@human.score += 1; talkToPlayer("win")) if good == 4
+  end
+
+#Computer part
+
+  def makeSecret
+    count = 4
+    puts "Please #{@human.name}, create the secret!"
+    puts "\n"
+    (0...4).each do |time|
+      pass = false
+      puts "Select on color from the following choices... "
+      @color_list.each_with_index { |color, index| puts "#{index}: #{color}" }
+      while pass == false
+        choice = gets.chomp
+        puts "\n"
+        choice =~ /^[0-5]{1}$/ ? (pass = true) : (puts "Please, give a number between 0 and 5")
+      end
+
+      @secret[time] = @color_list[choice.to_i]
+    end
+    puts @secret
   end
 
   def mainLoopForComp
@@ -120,12 +118,12 @@ class Board
     end
       
     res = reprForComp
-    validate = false
+    pass = false
 
-    while validate == false
+    while pass == false
       puts "Press 'c' to continue"
       input = gets.chomp
-      validate = true if input == "c"
+      pass = true if input == "c"
     end
       
     @counter -= 1
@@ -138,27 +136,46 @@ class Board
 
       res = reprForComp
 
-      validate = false
+      pass = false
 
-      while validate == false
+      while pass == false
         puts "Press 'c' to continue"
         input = gets.chomp
-        validate = true if input == "c"
+        pass = true if input == "c"
       end
 
       @counter -= 1
 
     end
+    @human.score += 1
     talkToComputer("loose")
   end
 
+  def reprForComp
+    c = compareGuess(@guess, @secret)
+    puts "\n"
+    puts "Computer guesses are: "
+    puts "\t\t #{@guess[0]} \t | #{@guess[1]} \t | #{@guess[2]} \t | #{@guess[3]} \t\t results: |#{c[0]} #{c[1]} #{c[2]} #{c[3]}|"
+    good = c.count("o")
+    mispl = c.count("x")
+    puts "\n"
+    puts "\t\t Computer results are #{good} placed and #{mispl} misplaced"
+    puts "\n"
+    puts "\n"
+    
+    (@computer_score += 1; talkToComputer("win")) if good == 4
+    return c
+  end
+ 
+#Other
+
   def presentChoices
-    validate = false
+    pass = false
     puts "1- blue, 2- green, 3- red, 4- yellow, 5- orange, 6- purple"
     puts "\n" 
-    while validate == false
+    while pass == false
       answer = gets.chomp
-      answer =~ /^[1-6]{1}$/ ? (validate = true) : (puts "Please, give a number between 1 and 6!")
+      answer =~ /^[1-6]{1}$/ ? (pass = true) : (puts "Please, give a number between 1 and 6!")
     end
 
     case answer
@@ -186,15 +203,17 @@ class Board
   end
 
   def endGame
-    validate = false
+    pass = false
+    puts "Scores are:"
+    puts "#{@human.name}: #{@human.score} - Computer: #{@computer_score}"
     puts "\n"
     puts "Game is over now!"
     puts "Do you want to play another round? (y/n)"
     puts "\n"
 
-    while validate == false
+    while pass == false
       answer = gets.chomp
-      answer == "y" || answer == "n" ? (validate = true) : (puts "Not a correct choice!, please try again (y or n)")
+      answer == "y" || answer == "n" ? (pass = true) : (puts "Not a correct choice!, please try again (y or n)")
     end
 
     answer == "y" ? (puts "OK #{@human.name}, let's play again"; reset) : (puts "OK, bye #{@human.name}, then"; exit(0))
@@ -207,11 +226,5 @@ class Board
     start
   end
 
-  def createPlayer
-    puts "\n"
-    puts "What is your name please?"
-    name = gets.chomp
-    @human = Player.new(name)
-  end
 end
 

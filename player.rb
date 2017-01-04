@@ -1,6 +1,6 @@
 class Player
   attr_reader :name
-  attr_accessor :score
+  attr_accessor :score, :computer_score
 
   def initialize(name)
     @name = name
@@ -8,5 +8,4 @@ class Player
     puts "\n"
     puts "Hello #{@name}"
   end
-
 end
