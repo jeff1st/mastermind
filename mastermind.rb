@@ -90,7 +90,6 @@ class Board
 #Computer part
 
   def makeSecret
-    count = 4
     puts "Please #{@human.name}, create the secret!"
     puts "\n"
     (0...4).each do |time|
@@ -225,6 +224,6 @@ class Board
     @guess = [" ", " ", " ", " "]
     start
   end
-
 end
 
+game = Board.new()

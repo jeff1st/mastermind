@@ -1,6 +1,6 @@
 module Ai
   def makeRandomChoice
-    choice = rand(6)
+    return rand(6)
   end
 
   def checkIfPlaced(compare_list, guess_list, new_guess, mispl)
@@ -18,7 +18,7 @@ module Ai
     return new_guess, mispl
   end
 
-  def checkIfMisplaced(compare_list, guess_list, new_guess, mispl)
+  def checkIfMisplaced(new_guess, mispl)
     if mispl[0] != nil
       mispl.each do |tuple|
         i = 0
@@ -54,7 +54,7 @@ module Ai
     
     new_guess, mispl = checkIfPlaced(compare_list, guess_list, new_guess, mispl)
 
-    new_gess = checkIfMisplaced(compare_list, guess_list, new_guess, mispl)
+    new_guess = checkIfMisplaced(new_guess, mispl)
 
     new_guess = makeLastChoices(guess_list, new_guess)
 
