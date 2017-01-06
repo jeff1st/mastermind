@@ -6,3 +6,6 @@
 /* Scores are kept until you decide to leave the game */
 /* */
 /* Computer is pretty good as a decoder !! */
+/* */
+/* Start with mastermind.rb */
+
